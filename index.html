@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>SELF</title>
+  <meta name="description" content="Bağımlılık ve bütçe takibi — kişisel">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SELF">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- 1. AÇILIŞ VİDEOSU -->
+  <section id="screen-intro" class="screen video-screen">
+    <video id="intro-video" src="media/acilis.mp4" playsinline preload="auto"></video>
+    <div id="intro-tap" class="tap-gate" hidden>
+      <img src="icons/icon-192.png" alt="" width="96" height="96">
+      <p>Dokun</p>
+    </div>
+  </section>
+
+  <!-- 2. ANA EKRAN -->
+  <section id="screen-home" class="screen" hidden>
+    <header class="home-head">
+      <img src="icons/icon-192.png" alt="" width="72" height="72" class="logo">
+      <h1>SELF</h1>
+      <p id="clock-date" class="clock-date">—</p>
+      <p id="clock-time" class="clock-time">—</p>
+    </header>
+
+    <nav class="home-panels">
+      <button class="panel" data-go="addictions">
+        <span class="panel-title">Bağımlılıklar</span>
+        <span class="panel-sub" id="home-tap-sub">bugün 0 basış</span>
+      </button>
+      <button class="panel" data-go="budget">
+        <span class="panel-title">Bütçe</span>
+        <span class="panel-sub" id="home-budget-sub">—</span>
+      </button>
+    </nav>
+
+    <footer class="screen-foot">
+      <button class="btn-exit" data-exit>Çıkış</button>
+    </footer>
+  </section>
+
+  <!-- 3. BAĞIMLILIKLAR -->
+  <section id="screen-addictions" class="screen" hidden>
+    <header class="top-bar">
+      <button class="btn-back" data-back aria-label="Geri">‹</button>
+      <h2>Bağımlılıklar</h2>
+      <span class="top-date" data-clock-short></span>
+    </header>
+
+    <div class="scroll">
+      <div id="addiction-list" class="addiction-list"></div>
+
+      <p class="today-total">Bugün toplam: <strong id="addiction-today-total">0</strong></p>
+
+      <details class="history">
+        <summary>Geçmiş</summary>
+        <div class="table-wrap">
+          <table id="addiction-history"></table>
+        </div>
+      </details>
+    </div>
+
+    <footer class="screen-foot">
+      <button class="btn-exit" data-exit>Çıkış</button>
+    </footer>
+  </section>
+
+  <!-- 4. DÖNGÜ VİDEO (bağımlılık butonuna basınca) -->
+  <section id="screen-loop" class="screen video-screen" hidden>
+    <video id="loop-video" src="media/bagimlilik.mp4" playsinline loop preload="auto"></video>
+  </section>
+
+  <!-- 5. BÜTÇE -->
+  <section id="screen-budget" class="screen" hidden>
+    <header class="top-bar">
+      <button class="btn-back" data-back aria-label="Geri">‹</button>
+      <h2>Bütçe</h2>
+      <span class="top-date" data-clock-short></span>
+    </header>
+
+    <div class="scroll">
+
+      <!-- Kalan bütçe -->
+      <div class="card hero">
+        <p class="label">Kalan bütçe</p>
+        <p id="budget-remaining" class="big-number">—</p>
+        <div class="bar"><div id="budget-bar" class="bar-fill"></div></div>
+        <div class="hero-grid">
+          <div><span class="label">Harcanan</span><strong id="budget-spent">—</strong></div>
+          <div><span class="label">Bütçe</span><strong id="budget-total">—</strong></div>
+          <div><span class="label">Kalan gün</span><strong id="budget-days">—</strong></div>
+          <div><span class="label">Günlük pay</span><strong id="budget-daily">—</strong></div>
+        </div>
+        <p class="hint" id="budget-period">—</p>
+      </div>
+
+      <!-- Harcama ekle -->
+      <form id="expense-form" class="card" autocomplete="off">
+        <p class="label">Harcama ekle</p>
+        <div class="row">
+          <input id="expense-amount" type="text" inputmode="decimal" placeholder="Tutar (TL)" required>
+          <button type="submit" class="btn-primary">Ekle</button>
+        </div>
+        <div class="row">
+          <input id="expense-note" type="text" maxlength="60" placeholder="Not (isteğe bağlı)">
+          <input id="expense-date" type="date" required>
+        </div>
+      </form>
+
+      <!-- Harcama listesi -->
+      <div class="card">
+        <p class="label">Harcamalar</p>
+        <div id="expense-list" class="expense-list"></div>
+      </div>
+
+      <!-- Excel raporu -->
+      <div class="card">
+        <p class="label">Ödeme Planı 2026</p>
+
+        <p class="sub-label" id="debts-title"></p>
+        <div class="table-wrap"><table id="debts-table"></table></div>
+        <div class="table-total" id="debts-total"></div>
+
+        <p class="sub-label" id="incomes-title"></p>
+        <div class="table-wrap"><table id="incomes-table"></table></div>
+        <div class="table-total" id="incomes-total"></div>
+
+        <p class="sub-label">Eylül–Ekim özeti</p>
+        <table id="summary-table" class="kv"></table>
+
+        <p class="sub-label">Notlar</p>
+        <ul id="budget-notes" class="notes"></ul>
+      </div>
+
+      <!-- Veri -->
+      <div class="card">
+        <p class="label">Veri</p>
+        <p class="hint">Veriler yalnızca bu telefonda saklanır. Düzenli olarak dışa aktar.</p>
+        <div class="stack">
+          <button type="button" class="btn-secondary" id="btn-export-xlsx">Excel indir (.xlsx)</button>
+          <button type="button" class="btn-secondary" id="btn-export-json">Yedek indir (.json)</button>
+          <button type="button" class="btn-secondary" id="btn-import-json">Yedek yükle</button>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
+        </div>
+        <p class="hint" id="last-export">—</p>
+      </div>
+
+    </div>
+
+    <footer class="screen-foot">
+      <button class="btn-exit" data-exit>Çıkış</button>
+    </footer>
+  </section>
+
+  <!-- 6. KAPANIŞ VİDEOSU -->
+  <section id="screen-outro" class="screen video-screen" hidden>
+    <video id="outro-video" src="media/kapanis.mp4" playsinline preload="auto"></video>
+    <div id="outro-closed" class="tap-gate" hidden>
+      <img src="icons/icon-192.png" alt="" width="96" height="96">
+      <p class="dim">Uygulama kapatıldı</p>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="lib/xlsx.full.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
